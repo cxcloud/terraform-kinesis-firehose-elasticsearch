@@ -19,3 +19,20 @@ module "es" {
     "63.34.141.220/32",
   ]
 }
+
+# Kinesis Firehose
+module "kinesis-firehose" {
+  source        = "./modules/kinesis-firehose"
+  stream_name   = "cxcloud"
+  account_id    = "${data.aws_caller_identity.current.account_id}"
+  region        = "eu-west-1"
+  bucket        = "jallu-sandbox-logging"
+  es_arn        = "${module.es.arn}"
+  es_index_name = "cxcloud"
+  es_type_name  = "logs"
+
+  whitelisted_aws_account_arns = [
+    "arn:aws:iam::900616243192:root",
+    "arn:aws:iam::260237689589:root",
+  ]
+}
