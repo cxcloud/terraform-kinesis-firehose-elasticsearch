@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 # AWS Elasticsearch
 module "es" {
   source                   = "./modules/es"
