@@ -1,9 +1,11 @@
+data "aws_caller_identity" "current" {}
+
 # AWS Elasticsearch
 module "es" {
   source                   = "./modules/es"
   name                     = "${var.es_name}"
   region                   = "${var.region}"
-  account_id               = "${var.account_id}"
+  account_id               = "${data.aws_caller_identity.current.account_id}"
   es_ver                   = "${var.es_ver}"
   instance_type            = "${var.es_instance_type}"
   instance_count           = "${var.es_instance_count}"
@@ -19,7 +21,7 @@ module "es" {
 module "kinesis-firehose" {
   source                       = "./modules/kinesis-firehose"
   stream_name                  = "${var.stream_name}"
-  account_id                   = "${var.account_id}"
+  account_id                   = "${data.aws_caller_identity.current.account_id}"
   region                       = "${var.region}"
   bucket                       = "${var.s3_bucket}"
   es_arn                       = "${module.es.arn}"

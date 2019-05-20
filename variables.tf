@@ -5,11 +5,6 @@ variable "region" {
   description = "AWS Region"
 }
 
-variable "account_id" {
-  type        = "string"
-  description = "AWS Account ID"
-}
-
 # Elasticsearch variables
 
 variable "es_name" {
