@@ -52,7 +52,7 @@ The following example show how the module can be used. In this example release 1
 
 ```console
 module "kinesis-firehose-elasticsearch" {
-  source                       = "github.com/cxcloud/terraform-kinesis-firehose-elasticsearch?ref=1.0.0"
+  source                       = "github.com/cxcloud/terraform-kinesis-firehose-elasticsearch?ref=v1.0.0"
   region                       = "eu-west-1"
   es_name                      = "cxcloud"
   es_ver                       = 6.5
