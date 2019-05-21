@@ -1,20 +1,20 @@
 output "es_arn" {
-  description = "ES ARN"
+  description = "Elasticsearch ARN"
   value       = "${module.es.arn}"
 }
 
 output "endpoint" {
-  description = "ES Endpoint"
+  description = "Elasticsearch Endpoint"
   value       = "${module.es.endpoint}"
 }
 
 output "domain_id" {
-  description = "ES ARN"
+  description = "Elasticsearch Domain ID"
   value       = "${module.es.domain_id}"
 }
 
 output "domain_name" {
-  description = "ES ARN"
+  description = "Elasticsearch Domain Name"
   value       = "${module.es.domain_name}"
 }
 

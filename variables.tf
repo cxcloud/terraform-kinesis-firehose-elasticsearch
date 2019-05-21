@@ -3,30 +3,32 @@
 variable "region" {
   type        = "string"
   description = "AWS Region"
+  default     = "eu-west-1"
 }
 
 # Elasticsearch variables
 
 variable "es_name" {
   type        = "string"
-  description = "Domain name for Elasticsearch"
+  description = "Cluster name for Elasticsearch"
   default     = "cxcloud"
 }
 
 variable "es_ver" {
   type        = "string"
-  description = "Elasticsearch Version"
+  description = "Elasticsearch version"
   default     = 6.5
 }
 
 variable "es_instance_type" {
   type        = "string"
-  description = "Instance type for ES"
+  description = "Instance type for Elasticsearch"
+  default     = "t2.small.elasticsearch"
 }
 
 variable "es_instance_count" {
   type        = "string"
-  description = "Amount of ES nodes"
+  description = "Amount of Elasticsearch nodes"
   default     = 1
 }
 
@@ -39,6 +41,7 @@ variable "es_dedicated_master_enabled" {
 variable "es_ebs_size" {
   type        = "string"
   description = "Size of EBS volume per instance"
+  default     = 35
 }
 
 variable "es_snapshot_start_hour" {
@@ -56,6 +59,7 @@ variable "es_name_tag" {
 variable "es_whitelisted_ips" {
   type        = "list"
   description = "Whitelisted IPs to access ES"
+  default     = []
 }
 
 # Kinesis Firehose variables 
