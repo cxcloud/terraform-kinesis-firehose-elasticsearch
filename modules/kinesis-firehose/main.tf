@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "logs" {
-  bucket = "${var.bucket}"
+  bucket = var.bucket
   acl    = "private"
 }
 
@@ -24,8 +24,8 @@ POLICY
 }
 
 resource "aws_iam_policy" "firehose_delivery_policy" {
-  name        = "firehose-delivery-policy"
-  path        = "/"
+  name = "firehose-delivery-policy"
+  path = "/"
   description = "Kinesis Firehose delivery policy"
 
   policy = <<POLICY
@@ -101,50 +101,50 @@ POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "attach_delivery_policy" {
-  role       = "${aws_iam_role.firehose_delivery_role.name}"
-  policy_arn = "${aws_iam_policy.firehose_delivery_policy.arn}"
+  role       = aws_iam_role.firehose_delivery_role.name
+  policy_arn = aws_iam_policy.firehose_delivery_policy.arn
 }
 
 data "aws_iam_policy_document" "assume_kinesis_firehose" {
   statement {
     actions = ["sts:AssumeRole"]
 
-    principals = {
+    principals {
       type        = "AWS"
-      identifiers = "${var.whitelisted_aws_account_arns}"
+      identifiers = var.whitelisted_aws_account_arns
     }
   }
 }
 
 resource "aws_iam_role" "assume_kinesis_firehose" {
   name               = "KinesisFirehose"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_kinesis_firehose.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_kinesis_firehose.json
 }
 
 resource "aws_iam_role_policy_attachment" "attach_kinesis_firehose" {
-  role       = "${aws_iam_role.assume_kinesis_firehose.name}"
+  role       = aws_iam_role.assume_kinesis_firehose.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
 }
 
 resource "aws_kinesis_firehose_delivery_stream" "cxcloud" {
-  name        = "${var.stream_name}"
+  name        = var.stream_name
   destination = "elasticsearch"
 
   s3_configuration {
-    role_arn           = "${aws_iam_role.firehose_delivery_role.arn}"
-    bucket_arn         = "${aws_s3_bucket.logs.arn}"
-    buffer_size        = "${var.s3_buffer_size}"
-    buffer_interval    = "${var.s3_buffer_interval}"
-    compression_format = "${var.s3_compression_format}"
+    role_arn           = aws_iam_role.firehose_delivery_role.arn
+    bucket_arn         = aws_s3_bucket.logs.arn
+    buffer_size        = var.s3_buffer_size
+    buffer_interval    = var.s3_buffer_interval
+    compression_format = var.s3_compression_format
   }
 
   elasticsearch_configuration {
-    domain_arn         = "${var.es_arn}"
-    role_arn           = "${aws_iam_role.firehose_delivery_role.arn}"
-    index_name         = "${var.es_index_name}"
-    type_name          = "${var.es_type_name}"
-    buffering_size     = "${var.es_buffering_size}"
-    buffering_interval = "${var.es_buffering_interval}"
-    s3_backup_mode     = "${var.s3_backup_mode}"
+    domain_arn         = var.es_arn
+    role_arn           = aws_iam_role.firehose_delivery_role.arn
+    index_name         = var.es_index_name
+    type_name          = var.es_type_name
+    buffering_size     = var.es_buffering_size
+    buffering_interval = var.es_buffering_interval
+    s3_backup_mode     = var.s3_backup_mode
   }
 }

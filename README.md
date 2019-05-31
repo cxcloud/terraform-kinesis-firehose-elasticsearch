@@ -48,11 +48,13 @@ The following table list the output variables
 
 ### Example
 
-The following example show how the module can be used. In this example release 1.0.0 is used.
+The following example show how the module can be used. In this example release 1.1.0 is used.
+
+Note that release 1.1.0 requires terraform client ver 0.12 or above. Use release 1.0.0 for terraform versions below 0.12.
 
 ```console
 module "kinesis-firehose-elasticsearch" {
-  source                       = "github.com/cxcloud/terraform-kinesis-firehose-elasticsearch?ref=v1.0.0"
+  source                       = "github.com/cxcloud/terraform-kinesis-firehose-elasticsearch?ref=v1.1.0"
   region                       = "eu-west-1"
   es_name                      = "cxcloud"
   es_ver                       = 6.5
