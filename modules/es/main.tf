@@ -6,7 +6,7 @@ data "aws_iam_policy_document" "es_policy" {
       "arn:aws:es:${var.region}:${var.account_id}:domain/${var.name}/*",
     ]
 
-    principals = {
+    principals {
       type        = "AWS"
       identifiers = ["*"]
     }
@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "es_policy" {
     condition {
       test     = "IpAddress"
       variable = "aws:SourceIp"
-      values   = "${var.whitelisted_ips}"
+      values   = var.whitelisted_ips
     }
   }
 
@@ -25,7 +25,7 @@ data "aws_iam_policy_document" "es_policy" {
       "arn:aws:es:${var.region}:${var.account_id}:domain/${var.name}/*",
     ]
 
-    principals = {
+    principals {
       type        = "AWS"
       identifiers = ["*"]
     }
@@ -39,28 +39,28 @@ data "aws_iam_policy_document" "es_policy" {
 }
 
 resource "aws_elasticsearch_domain" "cxcloud" {
-  domain_name           = "${var.name}"
-  elasticsearch_version = "${var.es_ver}"
+  domain_name           = var.name
+  elasticsearch_version = var.es_ver
 
   cluster_config {
-    instance_type            = "${var.instance_type}"
-    instance_count           = "${var.instance_count}"
-    dedicated_master_enabled = "${var.dedicated_master_enabled}"
+    instance_type            = var.instance_type
+    instance_count           = var.instance_count
+    dedicated_master_enabled = var.dedicated_master_enabled
   }
 
   ebs_options {
     ebs_enabled = true
     volume_type = "gp2"
-    volume_size = "${var.ebs_size}"
+    volume_size = var.ebs_size
   }
 
   snapshot_options {
-    automated_snapshot_start_hour = "${var.snapshot_start_hour}"
+    automated_snapshot_start_hour = var.snapshot_start_hour
   }
 
   tags = {
-    Name = "${var.name_tag}"
+    Name = var.name_tag
   }
 
-  access_policies = "${data.aws_iam_policy_document.es_policy.json}"
+  access_policies = data.aws_iam_policy_document.es_policy.json
 }
