@@ -3,6 +3,7 @@ data "aws_caller_identity" "current" {}
 # AWS Elasticsearch
 module "es" {
   source                   = "./modules/es"
+  create_es                = var.create_es
   name                     = var.es_name
   region                   = var.region
   account_id               = data.aws_caller_identity.current.account_id
@@ -28,8 +29,8 @@ module "kinesis-firehose" {
   s3_buffer_size               = var.s3_buffer_size
   s3_buffer_interval           = var.s3_buffer_interval
   s3_compression_format        = var.s3_compression_format
+  create_es_destination        = var.create_es
   es_index_name                = var.es_index_name
-  es_type_name                 = var.es_type_name
   es_buffering_size            = var.es_buffering_size
   es_buffering_interval        = var.es_buffering_interval
   s3_backup_mode               = var.s3_backup_mode

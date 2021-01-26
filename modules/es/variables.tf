@@ -1,3 +1,9 @@
+variable "create_es" {
+  type        = bool
+  description = "Should ES cluster be created"
+  default     = "true"
+}
+
 variable "name" {
   type        = string
   description = "Domain name for Elasticsearch"
@@ -17,7 +23,7 @@ variable "account_id" {
 variable "es_ver" {
   type        = string
   description = "Elasticsearch Version"
-  default     = 6.5
+  default     = 7.9
 }
 
 variable "instance_type" {

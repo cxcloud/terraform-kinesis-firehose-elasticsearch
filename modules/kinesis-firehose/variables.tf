@@ -43,16 +43,16 @@ variable "s3_compression_format" {
   default     = "GZIP"
 }
 
+variable "create_es_destination" {
+  type        = bool
+  description = "Should ES cluster be created"
+  default     = "true"
+}
+
 variable "es_index_name" {
   type        = string
   description = "Elasticsearch index name"
   default     = "cxcloud"
-}
-
-variable "es_type_name" {
-  type        = string
-  description = "Elasticsearch index type"
-  default     = "logs"
 }
 
 variable "es_buffering_size" {

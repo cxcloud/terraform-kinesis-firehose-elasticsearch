@@ -24,8 +24,8 @@ POLICY
 }
 
 resource "aws_iam_policy" "firehose_delivery_policy" {
-  name = "firehose-delivery-policy"
-  path = "/"
+  name        = "firehose-delivery-policy"
+  path        = "/"
   description = "Kinesis Firehose delivery policy"
 
   policy = <<POLICY
@@ -43,6 +43,41 @@ resource "aws_iam_policy" "firehose_delivery_policy" {
                 "${aws_s3_bucket.logs.arn}/*"
             ]
         },
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:${var.region}:${var.account_id}:log-group:/aws/kinesisfirehose/%FIREHOSE_STREAM_NAME%:log-stream:*"
+            ]
+        },
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:DescribeStream",
+                "kinesis:GetShardIterator",
+                "kinesis:GetRecords"
+            ],
+            "Resource": "arn:aws:kinesis:${var.region}:${var.account_id}:stream/%FIREHOSE_STREAM_NAME%"
+        }
+    ]
+}
+POLICY
+}
+
+resource "aws_iam_policy" "firehose_es_delivery_policy" {
+  count       = var.create_es_destination ? 1 : 0
+  name        = "firehose-es-delivery-policy"
+  path        = "/"
+  description = "Kinesis Firehose ES delivery policy"
+
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "",
             "Effect": "Allow",
@@ -74,26 +109,6 @@ resource "aws_iam_policy" "firehose_delivery_policy" {
                 "${var.es_arn}/_stats",
                 "${var.es_arn}/cxcloud*/_stats"
             ]
-        },
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-                "logs:PutLogEvents"
-            ],
-            "Resource": [
-                "arn:aws:logs:${var.region}:${var.account_id}:log-group:/aws/kinesisfirehose/%FIREHOSE_STREAM_NAME%:log-stream:*"
-            ]
-        },
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-                "kinesis:DescribeStream",
-                "kinesis:GetShardIterator",
-                "kinesis:GetRecords"
-            ],
-            "Resource": "arn:aws:kinesis:${var.region}:${var.account_id}:stream/%FIREHOSE_STREAM_NAME%"
         }
     ]
 }
@@ -103,6 +118,12 @@ POLICY
 resource "aws_iam_role_policy_attachment" "attach_delivery_policy" {
   role       = aws_iam_role.firehose_delivery_role.name
   policy_arn = aws_iam_policy.firehose_delivery_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "attach_es_delivery_policy" {
+  count      = var.create_es_destination ? 1 : 0
+  role       = aws_iam_role.firehose_delivery_role.name
+  policy_arn = aws_iam_policy.firehose_es_delivery_policy[0].arn
 }
 
 data "aws_iam_policy_document" "assume_kinesis_firehose" {
@@ -128,23 +149,39 @@ resource "aws_iam_role_policy_attachment" "attach_kinesis_firehose" {
 
 resource "aws_kinesis_firehose_delivery_stream" "cxcloud" {
   name        = var.stream_name
-  destination = "elasticsearch"
+  destination = var.create_es_destination ? "elasticsearch" : "extended_s3"
 
-  s3_configuration {
-    role_arn           = aws_iam_role.firehose_delivery_role.arn
-    bucket_arn         = aws_s3_bucket.logs.arn
-    buffer_size        = var.s3_buffer_size
-    buffer_interval    = var.s3_buffer_interval
-    compression_format = var.s3_compression_format
+  dynamic "extended_s3_configuration" {
+    for_each = var.create_es_destination ? [] : [1]
+    content {
+      role_arn           = aws_iam_role.firehose_delivery_role.arn
+      bucket_arn         = aws_s3_bucket.logs.arn
+      buffer_size        = var.s3_buffer_size
+      buffer_interval    = var.s3_buffer_interval
+      compression_format = var.s3_compression_format
+    }
   }
 
-  elasticsearch_configuration {
-    domain_arn         = var.es_arn
-    role_arn           = aws_iam_role.firehose_delivery_role.arn
-    index_name         = var.es_index_name
-    type_name          = var.es_type_name
-    buffering_size     = var.es_buffering_size
-    buffering_interval = var.es_buffering_interval
-    s3_backup_mode     = var.s3_backup_mode
+  dynamic "s3_configuration" {
+    for_each = var.create_es_destination ? [1] : []
+    content {
+      role_arn           = aws_iam_role.firehose_delivery_role.arn
+      bucket_arn         = aws_s3_bucket.logs.arn
+      buffer_size        = var.s3_buffer_size
+      buffer_interval    = var.s3_buffer_interval
+      compression_format = var.s3_compression_format
+    }
+  }
+
+  dynamic "elasticsearch_configuration" {
+    for_each = var.create_es_destination ? [1] : []
+    content {
+      domain_arn         = var.es_arn
+      role_arn           = aws_iam_role.firehose_delivery_role.arn
+      index_name         = var.es_index_name
+      buffering_size     = var.es_buffering_size
+      buffering_interval = var.es_buffering_interval
+      s3_backup_mode     = var.s3_backup_mode
+    }
   }
 }

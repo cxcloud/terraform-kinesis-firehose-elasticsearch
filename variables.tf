@@ -8,6 +8,12 @@ variable "region" {
 
 # Elasticsearch variables
 
+variable "create_es" {
+  type        = bool
+  description = "Should ES cluster be created"
+  default     = "true"
+}
+
 variable "es_name" {
   type        = string
   description = "Cluster name for Elasticsearch"
@@ -17,13 +23,13 @@ variable "es_name" {
 variable "es_ver" {
   type        = string
   description = "Elasticsearch version"
-  default     = 6.5
+  default     = 7.9
 }
 
 variable "es_instance_type" {
   type        = string
   description = "Instance type for Elasticsearch"
-  default     = "t2.small.elasticsearch"
+  default     = "t3.small.elasticsearch"
 }
 
 variable "es_instance_count" {
@@ -62,7 +68,7 @@ variable "es_whitelisted_ips" {
   default     = []
 }
 
-# Kinesis Firehose variables 
+# Kinesis Firehose variables
 variable "stream_name" {
   type        = string
   description = "Kinesis Firehose Stream Name"
@@ -96,12 +102,6 @@ variable "es_index_name" {
   type        = string
   description = "Elasticsearch index name"
   default     = "cxcloud"
-}
-
-variable "es_type_name" {
-  type        = string
-  description = "Elasticsearch index type"
-  default     = "logs"
 }
 
 variable "es_buffering_size" {

@@ -39,6 +39,7 @@ data "aws_iam_policy_document" "es_policy" {
 }
 
 resource "aws_elasticsearch_domain" "cxcloud" {
+  count                 = var.create_es ? 1 : 0
   domain_name           = var.name
   elasticsearch_version = var.es_ver
 

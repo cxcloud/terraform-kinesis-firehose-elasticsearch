@@ -13,6 +13,7 @@ The following table list the configurable parameters and their default values.
 | Name | Description | Default |
 | --- | --- | --- |
 | region | AWS Region | eu-west-1 |
+| create_es | Should Elasticsearch cluster be created | true |
 | es_name | Domain name for Elasticsearch | cxcloud |
 | es_ver | Elasticsearch Version | 6.5 |
 | es_instance_type | Instance type for Elasticsearch | t2.small.elasticsearch |
@@ -28,7 +29,6 @@ The following table list the configurable parameters and their default values.
 | s3_buffer_interval | S3 buffer interval | 60 |
 | s3_compression_format | S3 log compression format | GZIP |
 | es_index_name | Elasticsearch index name | cxcloud |
-| es_type_name | Elasticsearch index type | logs |
 | es_buffering_size | Elasticsearch buffering size | 10 |
 | es_buffering_interval | Elasticsearch buffering interval | 60 |
 | s3_backup_mode | S3 backup mode | AllDocuments |
@@ -48,17 +48,18 @@ The following table list the output variables
 
 ### Example
 
-The following example show how the module can be used. In this example release 1.1.0 is used.
+The following example show how the module can be used. In this example release 1.2.0 is used.
 
-Note that release 1.1.0 requires terraform client ver 0.12 or above. Use release 1.0.0 for terraform versions below 0.12.
+Note that release 1.2.0 requires terraform client ver 0.12 or above. Use release 1.0.0 for terraform versions below 0.12.
 
 ```console
 module "kinesis-firehose-elasticsearch" {
-  source                       = "github.com/cxcloud/terraform-kinesis-firehose-elasticsearch?ref=v1.1.0"
+  source                       = "github.com/cxcloud/terraform-kinesis-firehose-elasticsearch?ref=v1.2.0"
   region                       = "eu-west-1"
+  create_es                    = true
   es_name                      = "cxcloud"
-  es_ver                       = 6.5
-  es_instance_type             = "t2.small.elasticsearch"
+  es_ver                       = 7.9
+  es_instance_type             = "t3.small.elasticsearch"
   es_instance_count            = 1
   es_dedicated_master_enabled  = false
   es_ebs_size                  = 35
@@ -66,12 +67,11 @@ module "kinesis-firehose-elasticsearch" {
   es_name_tag                  = "CX Cloud"
   es_whitelisted_ips           = ["34.240.135.89/32"]
   stream_name                  = "cxcloud"
-  s3_bucket                    = "sandbox-logging"
+  s3_bucket                    = "cxcloud-logging"
   s3_buffer_size               = 10
   s3_buffer_interval           = 60
   s3_compression_format        = "GZIP"
   es_index_name                = "cxcloud"
-  es_type_name                 = "logs"
   es_buffering_size            = 10
   es_buffering_interval        = 60
   s3_backup_mode               = "AllDocuments"
